@@ -3,23 +3,29 @@ from telebot.types import InlineKeyboardMarkup
 from telebot.types import ReplyKeyboardMarkup
 
 
-def get_main_menu() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(True, False)
-    keyboard.row('Баланс')
-#    keyboard.row('Администратор')
-    return keyboard
-
-
 def get_cancel_menu() -> ReplyKeyboardMarkup:
     keyboard = ReplyKeyboardMarkup(True, False)
     keyboard.row('Отмена')
     return keyboard
 
 
-def get_order_type_menu() -> ReplyKeyboardMarkup:
+def get_back_menu() -> ReplyKeyboardMarkup:
     keyboard = ReplyKeyboardMarkup(True, False)
-    keyboard.row('Кэш', 'Транзит')
-    keyboard.row('Отмена')
+    keyboard.row('Назад')
+    return keyboard
+
+
+def get_main_menu() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(True, False)
+    keyboard.row('Баланс')
+    keyboard.row('Заказы')
+    return keyboard
+
+
+def get_balance_menu() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(True, False)
+    keyboard.row('Счета', 'Касса')
+    keyboard.row('Назад')
     return keyboard
 
 

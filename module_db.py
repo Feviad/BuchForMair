@@ -30,19 +30,38 @@ def get_state(user_id: int) -> str:
             f'WHERE id={user_id}'
     return query_req(query, False)[0]
 
+def new_state(user_id: int, new_state: str) -> None:
+    query = f'UPDATE states ' \
+            f'SET state = \'{new_state}\' ' \
+            f'WHERE id = {user_id}'
+    query_sender(query)
 
-
-def det_balance() -> float:
-    query = f'SELECT value FROM income ' \
-            f'WHERE id>0'
-    incomes = query_req(query, True)
-    income = 0
-    for val in incomes:
-        income = income + float(val[0])
-    query = f'SELECT value FROM costs ' \
-            f'WHERE id>0'
-    costes = query_req(query, True)
-    cost = 0
-    for val in costes:
-        cost = cost + float(val[0])
+def get_balance(cash_id: int) -> float:
+    query = f'SELECT SUM(sum) as income ' \
+            f'FROM remittance ' \
+            f'WHERE income = {cash_id}'
+    income = query_req(query, False)[0]
+    if income is None:
+        income = 0
+    else:
+        income = income
+    query = f'SELECT SUM(sum) as outgo ' \
+            f'FROM remittance ' \
+            f'WHERE outgo = {cash_id}'
+    cost = query_req(query, False)[0]
+    if cost is None:
+        cost = 0
+    else:
+        cost = cost
     return income - cost
+
+def get_cash_list() -> list:
+    query = f'SELECT id, name FROM accounts'
+    ret = []
+    cash_desks = query_req(query, True)
+    for cash in cash_desks:
+        cash_dict = {'name': cash[1],
+                     'balance': get_balance(int(cash[0]))
+                     }
+        ret.append(cash_dict)
+    return ret
