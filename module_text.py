@@ -20,6 +20,7 @@ def error_text() -> dict:
            }
     return ret
 
+
 def return_to_main() -> dict:
     response = 'Возвращаемся в основное меню'
     markup = keyboard.get_main_menu()
@@ -30,13 +31,7 @@ def return_to_main() -> dict:
     return ret
 
 
-# =========================================================================== #
-def start() -> dict:
-    commands = {'Баланс': start_balance,
-                'Заказы': start_orders
-                }
-    return commands.get(mess.text, error_text)()
-
+# =================== Нажаты кнопки стартового меню ========================= #
 def start_balance() -> dict:
     balance = db.get_balance(1)
     db.new_state(user_id, 'balance_menu')
@@ -61,14 +56,6 @@ def start_orders() -> dict:
 
 
 # =========================================================================== #
-def balance_menu():
-    commands = {'Счета': balance_cash,
-                'Касса': error_text,
-                'Назад': return_to_main
-                }
-    return commands.get(mess.text, error_text)()
-
-
 def balance_cash():
     cash_desks = db.get_cash_list()
     response = ''
@@ -85,36 +72,34 @@ def balance_cash():
 # =========================================================================== #
 
 
-
-def orders_menu() ->dict:
-    commands = {
-                'Назад': return_to_main
-                }
-    return commands.get(mess.text, error_text)()
-
-
-
 def handle_text(message, state: str) -> dict:
     global mess, user_id, status
     mess = message
     status = state
     user_id = message.from_user.id
     # Если Бог есть то эта функция - часть его
-    stat = {'ready': start,
+    stat = {'ready': {'Баланс': start_balance,
+                      'Заказы': start_orders
+                      },
             #
-            'balance_menu': balance_menu,
-                #
-                'check_cash_menu': error_text,
-                'invent': error_text,
+            'balance_menu': {'Счета': balance_cash,
+                             'Касса': error_text,
+                             'Назад': return_to_main
+                             },
             #
-            'orders_menu': orders_menu,
-                #
-                'goods_menu': error_text,
-                'couriers_menu': error_text,
-                'clients_menu': error_text,
-                    #
-                    'new_order': error_text
+            'check_cash_menu': {'Назад': return_to_main
+                                },
+            'invent': error_text,
+            #
+            'orders_menu': {'Назад': return_to_main
+                            },
+            #
+            'goods_menu': error_text,
+            'couriers_menu': error_text,
+            'clients_menu': error_text,
+            #
+            'new_order': error_text
             }
-    response = stat[state]()
+    response = stat[state].get(mess.text, error_text)()
 
     return response
